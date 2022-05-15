@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+import { useSelector, useDispatch } from "react-redux";
+import { nanoid } from "@reduxjs/toolkit";
 import ROUTES from "../app/routes";
+
+import { selectAllTopics } from "../features/topics/topicsSlice";
+import { submitQuiz } from "../features/quizzes/quizzesSlice";
+import { addCards } from "../features/cards/cardSlice";
 
 export default function NewQuizForm() {
   const [name, setName] = useState("");
   const [cards, setCards] = useState([]);
   const [topicId, setTopicId] = useState("");
+
   const history = useHistory();
-  const topics = {};
+  const topics = useSelector(selectAllTopics);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,7 +23,15 @@ export default function NewQuizForm() {
       return;
     }
 
-    const cardIds = [];
+    const cardIds = cards.map((card) => card.id);
+    console.log(cardIds);
+
+    dispatch(submitQuiz({ name, quizId: nanoid(), topicId, cardIds }));
+    dispatch(addCards(cards));
+
+    setName("");
+    setCards([]);
+    setTopicId("");
 
     // create the new cards here and add each card's id to cardIds
     // create the new quiz here
@@ -26,7 +41,7 @@ export default function NewQuizForm() {
 
   const addCardInputs = (e) => {
     e.preventDefault();
-    setCards(cards.concat({ front: "", back: "" }));
+    setCards(cards.concat({ front: "", back: "", id: nanoid() }));
   };
 
   const removeCard = (e, index) => {

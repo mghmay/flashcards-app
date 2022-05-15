@@ -1,15 +1,19 @@
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Card from "../cards/Card";
 import ROUTES from "../../app/routes";
 
-export default function Topic() {
-  const quizzes = {}; // replace this with a call to your selector to get all the quizzes in state
+import { selectAllQuizzes } from "./quizzesSlice";
+
+export default function Quiz() {
+  const quizzes = useSelector(selectAllQuizzes);
   let { quizId } = useParams();
   const quiz = quizzes[quizId];
 
   return (
     <section>
       <h1>{quiz.name}</h1>
+      {console.log(quiz.cardIds)}
       <ul className="cards-list">
         {quiz.cardIds.map((id) => (
           <Card key={id} id={id} />
