@@ -24,7 +24,6 @@ export default function NewQuizForm() {
     }
 
     const cardIds = cards.map((card) => card.id);
-    console.log(cardIds);
 
     dispatch(submitQuiz({ name, quizId: nanoid(), topicId, cardIds }));
     dispatch(addCards(cards));
