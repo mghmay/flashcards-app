@@ -6,14 +6,21 @@ import ROUTES from "../app/routes";
 
 import { selectAllTopics } from "../features/topics/topicsSlice";
 import { submitQuiz } from "../features/quizzes/quizzesSlice";
-import { addCards } from "../features/cards/cardSlice";
+import {
+  selectCardsForCurrQuiz,
+  clearCardsForCurrQuiz,
+} from "../features/cards/cardSlice";
+
+import AddCards from "./AddCards";
 
 export default function NewQuizForm() {
   const [name, setName] = useState("");
-  const [cards, setCards] = useState([]);
+  const [addNewCard, setAddNewCard] = useState(false);
   const [topicId, setTopicId] = useState("");
 
   const history = useHistory();
+
+  const cardIds = useSelector(selectCardsForCurrQuiz);
   const topics = useSelector(selectAllTopics);
   const dispatch = useDispatch();
 
@@ -23,35 +30,16 @@ export default function NewQuizForm() {
       return;
     }
 
-    const cardIds = cards.map((card) => card.id);
-
     dispatch(submitQuiz({ name, quizId: nanoid(), topicId, cardIds }));
-    dispatch(addCards(cards));
 
+    dispatch(clearCardsForCurrQuiz());
     setName("");
-    setCards([]);
     setTopicId("");
-
-    // create the new cards here and add each card's id to cardIds
-    // create the new quiz here
 
     history.push(ROUTES.quizzesRoute());
   };
-
-  const addCardInputs = (e) => {
-    e.preventDefault();
-    setCards(cards.concat({ front: "", back: "", id: nanoid() }));
-  };
-
-  const removeCard = (e, index) => {
-    e.preventDefault();
-    setCards(cards.filter((card, i) => index !== i));
-  };
-
-  const updateCardState = (index, side, value) => {
-    const newCards = cards.slice();
-    newCards[index][side] = value;
-    setCards(newCards);
+  const handleAddCards = () => {
+    setAddNewCard(!addNewCard);
   };
 
   return (
@@ -76,36 +64,11 @@ export default function NewQuizForm() {
             </option>
           ))}
         </select>
-        {cards.map((card, index) => (
-          <div key={index} className="card-front-back">
-            <input
-              id={`card-front-${index}`}
-              value={cards[index].front}
-              onChange={(e) =>
-                updateCardState(index, "front", e.currentTarget.value)
-              }
-              placeholder="Front"
-            />
-
-            <input
-              id={`card-back-${index}`}
-              value={cards[index].back}
-              onChange={(e) =>
-                updateCardState(index, "back", e.currentTarget.value)
-              }
-              placeholder="Back"
-            />
-
-            <button
-              onClick={(e) => removeCard(e, index)}
-              className="remove-card-button"
-            >
-              Remove Card
-            </button>
-          </div>
-        ))}
+        {addNewCard && <AddCards />}
         <div className="actions-container">
-          <button onClick={addCardInputs}>Add a Card</button>
+          <button onClick={handleAddCards}>
+            {addNewCard ? "Remove all Cards" : "AddCards"}
+          </button>
           <button>Create Quiz</button>
         </div>
       </form>
