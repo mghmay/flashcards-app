@@ -53,6 +53,7 @@ h2 {
 
 button,
 .button {
+  height: 41px;
   background: #ffffff;
   border: 1px solid #03a8d8;
   border-radius: 20px;
@@ -62,6 +63,12 @@ button,
   color: #03a8d8;
   padding: 10px 21px;
   text-decoration: none;
+}
+
+.update-quiz {
+  position: fixed;
+  right: 10px;
+  bottom: 20px;
 }
 
 .create-new-topic-button {

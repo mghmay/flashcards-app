@@ -27,6 +27,12 @@ export default function NewQuizForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name.length === 0) {
+      alert("Please enter a name");
+      return;
+    }
+
+    if (!topicId) {
+      alert("Please enter a topic");
       return;
     }
 
@@ -37,9 +43,6 @@ export default function NewQuizForm() {
     setTopicId("");
 
     history.push(ROUTES.quizzesRoute());
-  };
-  const handleAddCards = () => {
-    setAddNewCard(!addNewCard);
   };
 
   return (
@@ -64,12 +67,12 @@ export default function NewQuizForm() {
             </option>
           ))}
         </select>
+        {addNewCard || (
+          <button onClick={(e) => setAddNewCard(true)}>Add cards</button>
+        )}
         {addNewCard && <AddCards />}
         <div className="actions-container">
-          <button onClick={handleAddCards}>
-            {addNewCard ? "Remove all Cards" : "AddCards"}
-          </button>
-          <button>Create Quiz</button>
+          <button className="update-quiz">Create Quiz</button>
         </div>
       </form>
     </section>

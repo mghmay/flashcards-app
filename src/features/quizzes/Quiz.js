@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Card from "../cards/Card";
+import AddCards from "../../components/AddCards";
 import ROUTES from "../../app/routes";
 
 import { selectAllQuizzes } from "./quizzesSlice";
@@ -19,6 +20,7 @@ export default function Quiz() {
           <Card key={id} id={id} />
         ))}
       </ul>
+      <AddCards />
       <Link to={ROUTES.newQuizRoute()} className="button center">
         Create a New Quiz
       </Link>

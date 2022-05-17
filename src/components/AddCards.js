@@ -1,23 +1,34 @@
 import { nanoid } from "@reduxjs/toolkit";
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { addCards, setCardsForCurrQuiz } from "../features/cards/cardSlice";
+import {
+  addAllCards,
+  removeCardForCurrQuiz,
+  addCardsForCurrQuiz,
+} from "../features/cards/cardSlice";
 
 const AddCards = () => {
   const dispatch = useDispatch();
   const [cards, setCards] = useState([]);
-  const [cardIds, setCardIds] = useState([]);
-  const cardsRef = useRef(1);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [addRemoveCurrCard, setAddRemoveCurrCard] = useState([]);
 
   useEffect(() => {
-    dispatch(setCardsForCurrQuiz(cardIds));
-  }, [cardIds]);
+    if (addRemoveCurrCard.type === "remove") {
+      dispatch(removeCardForCurrQuiz(addRemoveCurrCard.id));
+      setAddRemoveCurrCard([]);
+    }
+    if (addRemoveCurrCard.type === "add") {
+      dispatch(addCardsForCurrQuiz(addRemoveCurrCard.id));
+      setAddRemoveCurrCard([]);
+    }
+  }, [addRemoveCurrCard]);
 
   const removeCard = (e, index) => {
     e.preventDefault();
     setCards(cards.filter((_, i) => index !== i));
-    setCardIds(cardIds.filter((_, i) => index !== i));
-    cardsRef.current--;
+    const id = e.target.value;
+    setAddRemoveCurrCard({ type: "remove", id });
   };
 
   const updateCardState = (index, side, value) => {
@@ -30,14 +41,14 @@ const AddCards = () => {
     e.preventDefault();
     const id = nanoid();
     setCards(cards.concat({ front: "", back: "", id }));
-    setCardIds(cardIds.concat(id));
-    cardsRef.current++;
+    setAddRemoveCurrCard({ type: "add", id });
   };
 
-  if (cards.length === 0 && cardsRef.current !== 0) {
+  if (!hasLoaded) {
     const id = nanoid();
     setCards(cards.concat({ front: "", back: "", id }));
-    setCardIds(cardIds.concat(id));
+    setAddRemoveCurrCard({ type: "add", id });
+    setHasLoaded(true);
   }
 
   return (
@@ -65,6 +76,7 @@ const AddCards = () => {
           <div className="actions-container">
             <button
               onClick={(e) => removeCard(e, index)}
+              value={cards[index].id}
               className="remove-card-button"
             >
               Remove Card
