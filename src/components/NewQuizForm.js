@@ -4,24 +4,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
 import ROUTES from "../app/routes";
 
-import { selectAllTopics } from "../features/topics/topicsSlice";
-import { submitQuiz } from "../features/quizzes/quizzesSlice";
-import {
-  selectCardsForCurrQuiz,
-  clearCardsForCurrQuiz,
-} from "../features/cards/cardSlice";
-
+import { selectAllTopics, addTopicQuiz } from "../features/topics/topicsSlice";
 import AddCards from "./AddCards";
+import { addQuiz } from "../features/quizzes/quizzesSlice";
+import {
+  selectTempCardIds,
+  addCards,
+  clearTempCards,
+} from "../features/cards/cardSlice";
 
 export default function NewQuizForm() {
   const [name, setName] = useState("");
-  const [addNewCard, setAddNewCard] = useState(false);
   const [topicId, setTopicId] = useState("");
 
   const history = useHistory();
 
-  const cardIds = useSelector(selectCardsForCurrQuiz);
   const topics = useSelector(selectAllTopics);
+  const cardIds = useSelector(selectTempCardIds);
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
@@ -35,10 +34,12 @@ export default function NewQuizForm() {
       alert("Please enter a topic");
       return;
     }
+    const quizId = nanoid();
 
-    dispatch(submitQuiz({ name, quizId: nanoid(), topicId, cardIds }));
-
-    dispatch(clearCardsForCurrQuiz());
+    dispatch(addTopicQuiz({ quizId, topicId }));
+    dispatch(addQuiz({ name, quizId, topicId, cardIds }));
+    dispatch(addCards());
+    dispatch(clearTempCards());
     setName("");
     setTopicId("");
 
@@ -67,10 +68,7 @@ export default function NewQuizForm() {
             </option>
           ))}
         </select>
-        {addNewCard || (
-          <button onClick={(e) => setAddNewCard(true)}>Add cards</button>
-        )}
-        {addNewCard && <AddCards />}
+        <AddCards />
         <div className="actions-container">
           <button className="update-quiz">Create Quiz</button>
         </div>

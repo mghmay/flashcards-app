@@ -1,7 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  topics: {}
+  topics: {
+    "123": {
+      name: "birds",
+      id: "123",
+      icon: "https://static-assets.codecademy.com/skillpaths/react-redux/redux-quiz-app/bird.svg",
+      quizIds: []
+    }
+  }
 };
 
 const topicsSlice = createSlice({

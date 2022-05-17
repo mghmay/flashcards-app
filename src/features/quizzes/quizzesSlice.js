@@ -1,16 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addTopicQuiz } from "../topics/topicsSlice";
-
-export const submitQuiz = (payload) => {
-  const { quizId, topicId } = payload;
-  return (dispatch) => {
-    dispatch(addTopicQuiz({ quizId, topicId }));
-    dispatch(addQuiz(payload));
-  };
-};
 
 const initialState = {
-  quizzes: {}
+  quizzes: {
+    "123": {
+      name: "Bird quiz",
+      quizId: "123",
+      topicId: "123",
+      cardIds: ["123"]
+    }
+  }
 };
 
 const quizzesSlice = createSlice({
@@ -19,12 +17,19 @@ const quizzesSlice = createSlice({
   reducers: {
     addQuiz: (state, action) => {
       state.quizzes[action.payload.quizId] = action.payload;
+    },
+    updateQuizCards: (state, action) => {
+      const { quizId, cardIds } = action.payload;
+      console.log(cardIds);
+      cardIds.forEach((id) => {
+        state.quizzes[quizId].cardIds.push(id);
+      });
     }
   }
 });
 
 export const selectAllQuizzes = (state) => state.quizzes.quizzes;
 
-export const { addQuiz } = quizzesSlice.actions;
+export const { addQuiz, updateQuizCards } = quizzesSlice.actions;
 
 export default quizzesSlice.reducer;
